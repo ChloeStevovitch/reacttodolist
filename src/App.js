@@ -9,9 +9,18 @@ import './App.css';
 
 const Tasks =['faire des courses','aller au cours de chant'];
 
+const liStyle = {
+    listStyleType: 'none',
+    textAlign: 'left'
+
+};
+
+const checkboxStyle = {
+};
+
 
 function Toarray(props) {
-    var array = props.tab.map(elmt => <li>{elmt}</li>);
+    var array = props.tab.map(elmt => <li style={liStyle}> <input type="checkbox" style={checkboxStyle}/> {elmt} </li>);
     return <ul>{array}</ul>
 }
 
@@ -20,8 +29,9 @@ function Totitle(props) {
 }
 
 function Livepreview(props){
-    return <ul><li>{props.value}</li></ul>
+    return <ul><li style={liStyle}>{props.value}</li></ul>
 }
+
 
 
 class App extends Component {
@@ -58,7 +68,7 @@ class App extends Component {
             <Toarray tab={[this.state.value].concat(Tasks)}/>
               <form  onSubmit={this.handleSubmit}>
                   <label>
-                      Name:
+                      New task :
                       <input id='taskInput' type="text" value={this.state.value} onChange={this.handleChange} />
                   </label>
                   <input type="submit" value="Save" />
