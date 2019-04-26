@@ -3,6 +3,7 @@ import './App.css';
 import styled from 'styled-components';
 
 
+let BDDurl = "http://localhost:3000/bdd.json"
 
 
 const NEW_TASK_DEFAULT = {
@@ -27,8 +28,8 @@ class App extends Component {
     }
 
     componentDidMount(){
-       let url = 'mongodb://heroku_85hw7c2c:asu874emede1m1068f4hklb8vc@ds147946.mlab.com:47946/heroku_85hw7c2c'
-        fetch(url)
+
+        fetch(BDDurl)
         .then(resp => resp.json())
         .then(data => {
                 let tasks = data.map((task,index) => {
