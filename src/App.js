@@ -1,134 +1,115 @@
 import React, { Component } from 'react';
-import './App.css';
-import styled from 'styled-components';
 
-
-let BDDurl = "http://localhost:3000/bdd.json"
-
-
-const NEW_TASK_DEFAULT = {
-    description: '',
-    isDone: false,
-    isArchived: false,
-}
-
-let BDD = [];
-let ID = 0;
 class App extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.state = {
+        value:'',
+        list: [
+            {
+                id:'lzzdokozkdod',
+                description: 'Manger son petit dejeuner',
+                isDone: true,
+                isArchived: false,
+            },
+            {
+                id:'oazkdoakzd',
+                description: 'Kiffer la vie',
+                isDone: false,
+                isArchived: false,
+            }
+        ],
+      };
+  }
 
-        this.state = NEW_TASK_DEFAULT
+  onRemoveItem = id => {
+    this.setState(state => {
+      const list = state.list.filter(item => item.id !== id);
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.toggleCheckbox = this.toggleCheckbox.bind(this)
+      return {
+        list,
+      };
+    });
+  };
 
-    }
+  onChangeValue = event => {
+    this.setState({ value: event.target.value });
+  };
 
-    componentDidMount(){
-
-        fetch(BDDurl)
-        .then(resp => resp.json())
-        .then(data => {
-                let tasks = data.map((task,index) => {
-                    return (
-                        <h3>task.description</h3>
-                    )
-                })
-                this.setState({tasks: tasks})
-            })
-    }
-
-    handleChange(event) {
-        this.setState({description: event.target.value});
-        event.preventDefault();
-
-    }
-    toggleCheckbox(element) {
-        let idtofind = element.target.value;
-        console.log(idtofind)
-        console.log(element)
-        let i = BDD.findIndex(x => String(x.id) === idtofind)
-        console.log(i)
-        console.log(BDD[i].isDone)
-        if  (BDD[i].isDone){
-            BDD[i].isDone=false;
-        }else{
-            BDD[i].isDone=true;
+  onAddItem = () => {
+    this.setState(state => {
+        
+        const charSet = [
+            'A','B','C','D','E','F','G','H','J','K','M','N','P','Q',
+            'R','S','T','U','V','W','X','Y','Z',
+          ]  
+        const numberSet = ['2', '3', '4', '5', '6', '7', '8', '9']
+        function generateCode() {
+            function randomItem(possibilities) {
+              return possibilities[Math.trunc(Math.random() * possibilities.length)]
+            }
+            let codeTemp = ''
+            for (let i = 0; i < 6; i++) {
+              codeTemp += randomItem(charSet)
+            }
+            for (let i = 0; i < 2; i++) {
+              codeTemp += randomItem(numberSet)
+            }
+            return codeTemp
+          }
+          
+        function createCode() {
+            const code = generateCode()
+            if (state.list.filter(item => item.id === code).length > 0 ) {
+                return createCode()
+            } else {
+                return code
+            }
         }
-        element.checked = !element.checked;
+        
+     const element = {description:state.value, id:createCode(), isArchived:false, isDone:false}
+    
+     const list = [element, ...state.list];
+      return {
+        list,
+        value: '',
+      };
+    });
+  };
 
-        element.preventDefault();
-    }
+  render() {
+    return (
+      <div>
+        <ul>
+        {this.state.list.map(item => (
+            <li key={item.id} id={item.id}>
+               {item.description}.
+              <button
+                type="button"
+                onClick={() => this.onRemoveItem(item.id)}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
 
-    loadTask(){
-
-    }
-    handleSubmit(event) {
-        if (document.getElementById("taskInput").value) {
-            let newTask = {description : this.state.description, isDone : this.state.isDone, isArchived : this.state.isArchived, date: new Date (), id:ID};
-            ID=ID+1;
-            BDD.unshift(newTask)
-            this.setState(NEW_TASK_DEFAULT);
-            document.getElementById("taskInput").value = '';
-        }
-
-        event.preventDefault();
-    }
-
-
-
-    render() {
-
-
-        const Totitle = (props)  => {
-            return (<h1>{props.message}</h1>)
-        }
-        const ToArray = () => {
-            return (BDD.map((item,i) =><li key={i}> <Coche value={item.id} attr={{isDone: item.isDone}} onChange={e =>this.toggleCheckbox(e)} type="checkbox"/> <span style={{color : item.isDone ? 'grey' : 'white'}}>{item.description}</span></li>))
-        }
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <Totitle message='My todolist'/>
-
-                {this.state.posts}
-                    <form>
-                        <ul style={{listStyleType: 'none', textAlign:'left', paddingLeft:0, width: '80%'}}>
-                            <Li>{this.state.description}</Li>
-                            <ToArray />
-
-                        </ul>
-                    </form>
-
-
-                    <form onSubmit={e => this.handleSubmit(e)}>
-                        <label>
-                            New task :
-                            <input id='taskInput' type="text" onChange={e => this.handleChange(e)} />
-                        </label>
-                        <input type="submit"value="Save" />
-                    </form>
-
-                </header>
-            </div>
-        );
-    }
+        <input
+          type="text"
+          value={this.state.value}
+          onChange={this.onChangeValue}
+        />
+        <button
+          type="button"
+          onClick={this.onAddItem}
+          disabled={!this.state.value}
+        >
+          Add
+        </button>
+      </div>
+    );
+  }
 }
-
-const Li = styled.li`
-  text-align:'left!';
-  list-style-type:'none!';
-`;
-
-
-
-
-
-
-const Coche = styled.input`
-`;
 
 export default App;
