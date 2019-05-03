@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import axios from 'axios'
+
+let BDDurl = "mongodb://heroku_82vw5vwp:n0942g0lhmr6tq4q0i9jv915u@ds151076.mlab.com:51076/heroku_82vw5vwp"
+
 
 class App extends Component {
   constructor(props) {
@@ -6,21 +10,15 @@ class App extends Component {
 
     this.state = {
         value:'',
-        list: [
-            {
-                id:'lzzdokozkdod',
-                description: 'Manger son petit dejeuner',
-                isDone: true,
-                isArchived: false,
-            },
-            {
-                id:'oazkdoakzd',
-                description: 'Kiffer la vie',
-                isDone: false,
-                isArchived: false,
-            }
-        ],
+        list: [],
       };
+  }
+
+  componentDidMount(){
+    axios.get(BDDurl,{ headers: { 'crossDomain': true, 'Content-Type': 'application/json'}}).then(res => {
+        this.setState({list:res.tasks})
+    })
+
   }
 
   onRemoveItem = id => {
